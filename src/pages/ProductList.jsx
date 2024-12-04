@@ -32,6 +32,7 @@ const ProductList = () => {
           <thead>
             <tr>
               <th>S.No.</th>
+              <th>Image</th>
               <th>Product Name</th>
               <th>Price</th>
               <th>Action</th>
@@ -42,6 +43,7 @@ const ProductList = () => {
               data.map((item, index) => (
                 <tr>
                   <td>{index + 1}</td>
+                  <td>{item.attributes.image}</td>
                   <td>{item.attributes.name}</td>
                   <td>{item.attributes.price}</td>
                   <td className="d-flex gap-2">
