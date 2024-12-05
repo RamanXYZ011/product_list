@@ -5,7 +5,7 @@ import { Form } from "react-bootstrap";
 const CustomForm = () => {
   const initialState = {
     name: "",
-    price: "",
+    price: 0,
     description: "",
     product_image: [],
   };
@@ -16,11 +16,12 @@ const CustomForm = () => {
     const file = e.target.files[0];
     console.log(file, " file");
     if (file) {
-      const path = URL.createObjectURL(file);
+      const path = URL.createObjectURL(file); 
       console.log(path);
       setImgPath(path);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(value, " value of form");
@@ -39,6 +40,7 @@ const CustomForm = () => {
       setValue(initialState);
     }
   };
+  
   return (
     <div className="container bg-info rounded-4">
       <Form className="p-3" onSubmit={handleSubmit}>
@@ -86,7 +88,7 @@ const CustomForm = () => {
               ></textarea>
             </div>
           </div>
-          <div className="col-md d-flex justify-content-center">
+          <div className="col-md d-flex flex-column">
             <div className="mb-3">
               <label className="form-label">Upload Image:</label>
               <input
@@ -96,9 +98,10 @@ const CustomForm = () => {
                 onChange={handleOnChangeImage}
               />
             </div>
+
             {imgPath && (
-              <div className="d-flex flex-column  align-items-center rounded-5">
-                <span className="fs-4">Preview Image:</span>
+              <div className="d-flex rounded-5 gap-4">
+                <span className="fs-4 text-start ">Preview Image:</span>
                 <img
                   src={imgPath}
                   alt="PreviewImage"
@@ -106,8 +109,8 @@ const CustomForm = () => {
                   width="200px"
                   height="200px"
                 />
-              </div>
-            )}
+              </div>)
+            }
           </div>
         </div>
 

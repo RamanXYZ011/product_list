@@ -23,6 +23,18 @@ const ProductList = () => {
       console.log("Product list is not fetch", err);
     }
   };
+
+  const deleteProduct = async (id) => {
+    try {
+      await axios.delete(`https://xyzportal.thexyzstudio.com/api/products/${id}`);
+      setData(data.filter((item) => item.id !== id));
+      alert("Product deleted successfully!");
+    } catch (err) {
+      console.log("Failed to delete the product", err);
+      alert("Error deleting product. Please try again.");
+    }
+  };
+
   return (
     <div className="container">
       <div className="text-center fw-bold m-3">ProductList</div>
@@ -62,7 +74,7 @@ const ProductList = () => {
                       Edit
                     </Button>
                     <Button
-                      onClick={() => alert("Delete Me")}
+                      onClick={() => deleteProduct(item.id)}
                       className="btn btn-sm"
                       variant="danger"
                     >
