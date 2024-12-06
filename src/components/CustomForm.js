@@ -1,34 +1,31 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
+import { apiEndPoint } from "../api/Endpoint";
 
-const CustomForm = () => {
+const CustomForm = (id) => {
   const initialState = {
     name: "",
     price: 0,
     description: "",
-    product_image: [],
+    product_image: "",
   };
   const [value, setValue] = useState(initialState);
   const [imgPath, setImgPath] = useState("");
-
-  const handleOnChangeImage = (e) => {
-    const file = e.target.files[0];
-    console.log(file, " file");
-    if (file) {
-      const path = URL.createObjectURL(file); 
-      console.log(path);
-      setImgPath(path);
-    }
-  };
+  const [uploadImage, setUploadImage] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(value, " value of form");
     try {
+      const uploadedImageId = await handleUploadImage();
+      console.log(uploadedImageId, "uppa");
+      let fieldData = {
+        ...value,
+        product_image: [uploadedImageId],
+      };
       await axios
-        .post("https://xyzportal.thexyzstudio.com/api/products", {
-          data: { ...value },
+        .post(apiEndPoint.addNewProduct, {
+          data: fieldData,
         })
         .then((res) => {
           alert("Added Successfully New Product in Our Data ");
@@ -40,7 +37,28 @@ const CustomForm = () => {
       setValue(initialState);
     }
   };
-  
+
+  const handleOnChangeImage = (e) => {
+    const file = e.target.files[0];
+    console.log(file, " file");
+    if (file) {
+      const path = URL.createObjectURL(file);
+      console.log(path);
+      setImgPath(path);
+      setUploadImage(file);
+    }
+  };
+
+  const handleUploadImage = async () => {
+    const imgData = new FormData();
+    imgData.append("files", uploadImage);
+    try {
+      const response = await axios.post(apiEndPoint.uploadedImage, imgData);
+      return response.data[0].id;
+    } catch (err) {
+      console.log("Image is not uploading", err);
+    }
+  };
   return (
     <div className="container bg-info rounded-4">
       <Form className="p-3" onSubmit={handleSubmit}>
@@ -109,8 +127,8 @@ const CustomForm = () => {
                   width="200px"
                   height="200px"
                 />
-              </div>)
-            }
+              </div>
+            )}
           </div>
         </div>
 
