@@ -1,50 +1,86 @@
-// src/components/ProductForm.tsx
 import { useEffect, useState } from "react";
 import type { Product } from "../types";
 
-interface ProductFormProps {
-  onSave: (product: Product) => void;
+interface Props {
+  addProduct: (product: Omit<Product["attributes"], "product_image">) => void;
+  updateProduct: (id: number, product: Omit<Product["attributes"], "product_image">) => void;
   editingProduct: Product | null;
-  cancelEdit: () => void;
 }
 
-function ProductForm({ onSave, editingProduct, cancelEdit }: ProductFormProps) {
-  const [form, setForm] = useState<Product>({
+const ProductForm: React.FC<Props> = ({ addProduct, updateProduct, editingProduct }) => {
+  const [formData, setFormData] = useState<Omit<Product["attributes"], "product_image">>({
     name: "",
-    price: "",
+    price: 0,
     description: "",
-    image: "",
   });
 
   useEffect(() => {
     if (editingProduct) {
-      setForm(editingProduct);
+      setFormData({
+        name: editingProduct.attributes.name,
+        price: editingProduct.attributes.price,
+        description: editingProduct.attributes.description,
+      });
     }
   }, [editingProduct]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(form);
-    setForm({ name: "", price: "", description: "", image: "" });
+    if (editingProduct) {
+      updateProduct(editingProduct.id, formData);
+    } else {
+      addProduct(formData);
+    }
+    setFormData({ name: "", price: 0, description: "" });
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
-      <input name="name" value={form.name} onChange={handleChange} placeholder="Name" required />
-      <input name="price" value={form.price} onChange={handleChange} placeholder="Price" required />
-      <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" required />
-      <input name="image" value={form.image} onChange={handleChange} placeholder="Image URL" required />
-      <button type="submit">{editingProduct ? "Update" : "Add"} Product</button>
-      {editingProduct && <button type="button" onClick={cancelEdit}>Cancel</button>}
+    <form className="mb-4" onSubmit={handleSubmit}>
+      <div className="row g-2">
+        <div className="col-md-3">
+          <input
+            type="text"
+            name="name"
+            className="form-control"
+            placeholder="Product Name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-md-2">
+          <input
+            type="number"
+            name="price"
+            className="form-control"
+            placeholder="Price"
+            value={formData.price}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="col-md-5">
+          <input
+            type="text"
+            name="description"
+            className="form-control"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="col-md-2">
+          <button type="submit" className="btn btn-primary w-100">
+            {editingProduct ? "Update" : "Add"}
+          </button>
+        </div>
+      </div>
     </form>
   );
-}
+};
 
 export default ProductForm;
